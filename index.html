@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>식빵 고양이 애니메이션</title>
+<style>
+  /* 전체 화면 초록 배경 */
+  html,body {
+    height:100%;
+    margin:0;
+    background: #0fa84b; /* 꽉 찬 초록(원하면 색상값 바꿔도 됨) */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
+  }
+
+  /* 컨테이너: 고양이 위치 고정(제자리) */
+  .cat-wrap {
+    width:360px;
+    height:360px;
+    display:flex;
+    align-items:flex-end; /* 바닥 같아 보이게 아래 정렬 */
+    justify-content:center;
+  }
+
+  /* SVG 자체에 애니메이션 적용 */
+  .cat {
+    width:260px;
+    height:auto;
+    transform-origin: 50% 65%; /* 무게중심(대략 몸통 중앙 아래) 기준 회전 */
+    /* 매 3초마다 반복 */
+    animation: spinHop 3s infinite;
+    will-change: transform;
+  }
+
+  /* 눈 깜박임(선택) */
+  .eye {
+    transform-origin: center;
+    animation: blink 6s infinite;
+  }
+
+  /* 키프레임: 빠르게 한 바퀴(살짝 뛰어오름) → 착지 → 쉬기(자세 유지) */
+  @keyframes spinHop {
+    0%   { transform: translateY(0px) rotate(10deg); }        /* 기본: 살짝 사선(정면 사선 느낌) */
+    6%   { transform: translateY(-10px) rotate(150deg); }    /* 회전 시작 + 살짝 뜸 */
+    12%  { transform: translateY(-14px) rotate(370deg); }    /* 1바퀴 회전 완료(살짝 더 뜸) */
+    18%  { transform: translateY(-8px)  rotate(360deg); }    /* 착지 직전 */
+    22%  { transform: translateY(0px)   rotate(10deg); }     /* 착지 + 원래 사선 포즈 복귀 */
+    100% { transform: translateY(0px)   rotate(10deg); }     /* 긴 대기(자세 풀리지 않음) */
+  }
+
+  /* 눈 깜빡임: 아주 짧게 */
+  @keyframes blink {
+    0%,96%,100% { transform: scaleY(1); }
+    97% { transform: scaleY(0.05); }
+    98% { transform: scaleY(1); }
+  }
+
+  /* 바닥 그림자(살짝 바뀌면서 떠 있는 효과 강조) */
+  .shadow {
+    width:170px;
+    height:26px;
+    background: rgba(0,0,0,0.18);
+    border-radius:50%;
+    margin-top: 8px;
+    filter: blur(6px);
+    transform-origin:center;
+    animation: shadowPulse 3s infinite;
+  }
+
+  @keyframes shadowPulse {
+    0%   { transform: scaleX(1) translateY(0); opacity:0.95; }
+    12%  { transform: scaleX(0.7) translateY(-6px); opacity:0.7; } /* 떠있을 때 그림자 작아짐 */
+    22%  { transform: scaleX(1) translateY(0); opacity:0.95; }
+    100% { transform: scaleX(1) translateY(0); opacity:0.95; }
+  }
+
+  /* 모바일에서 적당히 줄임 */
+  @media (max-width:420px){
+    .cat-wrap { width:280px; height:280px; }
+    .cat { width:200px; }
+    .shadow { width:130px; height:20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="cat-wrap" aria-hidden="false">
+    <!-- SVG 고양이 (식빵 자세) -->
+    <svg class="cat" viewBox="0 0 300 220" role="img" aria-label="식빵 자세의 작은 회색 고양이">
+      <!-- 꼬리(뒤로 감긴 모양, 약간 뒤쪽에 위치) -->
+      <path d="M240 120 C270 110 290 140 270 150 C250 160 230 145 240 120 Z" fill="#b09e95"/>
+
+      <!-- 몸통 -->
+      <ellipse cx="150" cy="120" rx="100" ry="60" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+      <!-- 앞발(둥글게 포개진 식빵 자세) -->
+      <g transform="translate(-10,10)">
+        <ellipse cx="115" cy="140" rx="36" ry="18" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+        <ellipse cx="185" cy="140" rx="36" ry="18" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+      </g>
+
+      <!-- 머리 -->
+      <circle cx="95" cy="85" r="36" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+      <!-- 귀 -->
+      <path d="M74 66 L60 36 L90 56 Z" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+      <path d="M116 66 L132 36 L102 56 Z" fill="#cfc7c0" stroke="#a79b93" stroke-width="2"/>
+
+      <!-- 눈 (약간 사선으로 바라보는 듯) -->
+      <g transform="rotate( -6 95 85 )">
+        <ellipse class="eye" cx="83" cy="86" rx="6" ry="9" fill="#2b2b2b"/>
+        <ellipse class="eye" cx="107" cy="86" rx="6" ry="9" fill="#2b2b2b"/>
+        <!-- 눈 하이라이트 -->
+        <circle cx="84" cy="80" r="1.4" fill="#fff" />
+        <circle cx="108" cy="80" r="1.4" fill="#fff" />
+      </g>
+
+      <!-- 코와 입 -->
+      <path d="M95 95 q6 6 12 0" stroke="#9b6f6f" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="95" cy="92" r="3" fill="#9b6f6f"/>
+
+      <!-- 볼의 약간의 색 -->
+      <circle cx="78" cy="97" r="4" fill="#f1c0bf" opacity="0.5"/>
+      <circle cx="112" cy="97" r="4" fill="#f1c0bf" opacity="0.5"/>
+
+      <!-- 작은 디테일(털무늬) -->
+      <path d="M120 70 q10 6 20 2" stroke="#a79b93" stroke-width="1.5" fill="none"/>
+      <path d="M72 74 q-6 8 -8 18" stroke="#a79b93" stroke-width="1.5" fill="none"/>
+    </svg>
+  </div>
+
+  <!-- 바닥 그림자: SVG 밖에서 단순한 div로 처리 -->
+  <div style="position:fixed; bottom: calc(50% - 40px); display:flex; width:100%; justify-content:center; pointer-events:none;">
+    <div class="shadow" aria-hidden="true"></div>
+  </div>
+
+  <!-- 설명(개발자용 - 깃허브 페이지에 보일 필요 없으면 지워도 됨) -->
+  <div style="position:fixed; left:8px; bottom:8px; opacity:0.85; font-size:13px; color:#083611;">
+    <strong>팁:</strong> 애니메이션 속도/높이 조절은 CSS의 <code>@keyframes spinHop</code> 와 <code>.cat</code>의 <code>animation-duration</code> 값을 변경하세요.
+  </div>
+</body>
+</html>
